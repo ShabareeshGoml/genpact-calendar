@@ -1,34 +1,22 @@
 "use client";
 import CalendarComponent from "@/components/Calendar/CalendarComponent";
-import React from "react";
+import React, { useState } from "react";
+import styles from "../page.module.css";
+import EventSideBar from "@/components/EventSideBar/EventSideBar";
 
 function agentView() {
-  const event = [
-    {
-      title: "Some Event",
-      start: new Date(2024, 3, 4),
-      end: new Date(2024, 3, 4),
-    },
-    {
-      title: "Conference",
-      start: new Date(),
-      end: new Date(),
-      desc: "Big conference for important people",
-    },
-    {
-      title: "Meeting",
-      start: new Date(),
-      end: new Date(),
-      desc: "Pre-meeting meeting, to prepare for the meeting",
-    },
-  ];
-
-  const onSelectEvent = (e) => {
-    console.log(e);
+  const [selectedDate, setselectedDate] = useState(null);
+  const onDaySelection = (date) => {
+    setselectedDate(date);
   };
   return (
-    <div>
-      <CalendarComponent eventToSend={event} onEventSelect={onSelectEvent} />
+    <div className={styles.homePageContainer}>
+      <div style={{ width: "74%" }}>
+        <CalendarComponent onDaySelection={(date) => onDaySelection(date)} />
+      </div>
+      <div style={{ width: "22%", maxHeight: "99dvh" }}>
+        <EventSideBar selectedDate={selectedDate} />
+      </div>
     </div>
   );
 }
