@@ -6,20 +6,11 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 
 moment.locale("en-GB");
 const localizer = momentLocalizer(moment);
-function CalendarComponent() {
-  const handleSelect = ({ start, end }) => {
-    console.log(start, "start");
-    console.log(end, "end");
-    // const title = window.prompt("New Event name");
-    // if (title)
-    //   setEventsData([
-    //     ...eventsData,
-    //     {
-    //       start,
-    //       end,
-    //       title,
-    //     },
-    //   ]);
+function CalendarComponent({ onDaySelection, eventToSend, onEventSelect }) {
+  const handleSelect = ({ start }) => {
+    let startDate = moment(start).format("MM/DD/YYYY");
+    onDaySelection(startDate);
+    console.log(startDate, "start");
   };
 
   return (
@@ -27,11 +18,18 @@ function CalendarComponent() {
       <Calendar
         localizer={localizer}
         selectable
-        // events={myEventsList}
+        resizable
+        onSelectEvent={(e) => onEventSelect(e)}
+        events={eventToSend}
+        views={["month"]}
+        defaultDate={new Date()}
+        defaultView="month"
         startAccessor="start"
         endAccessor="end"
         style={{ height: "90dvh" }}
         onSelectSlot={handleSelect}
+        length={1}
+        // toolbar={false}
       />
     </div>
   );
