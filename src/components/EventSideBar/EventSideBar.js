@@ -4,22 +4,19 @@ import "./eventSideBar.css";
 import "react-responsive-modal/styles.css";
 import { Modal } from "react-responsive-modal";
 import moment from "moment";
-import { fetchSlotsFromDate, getAgentList } from "@/services/apiServices";
+import {
+  bookSlot,
+  fetchSlotsFromDate,
+  getAgentList,
+} from "@/services/apiServices";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { callIcon } from "@/assets";
+import Image from "next/image";
+// import callIcon from "../../assets/icons/call.png";
 
-const customStyles = {
-  content: {
-    top: "25%",
-    left: "40%",
-    right: "auto",
-    bottom: "auto",
-    marginRight: "-50%",
-    transform: "translate(-50%, -50%)",
-    width: "30%",
-  },
-};
-
-function EventSideBar({ selectedDate, isClient }) {
-  const defaultDate = moment(new Date()).format("YYYY-MM-DD");
+function EventSideBar({ selectedDate, isClient, toastTrigger }) {
+  const defaultDate = selectedDate || moment(new Date()).format("YYYY-MM-DD");
   const [modalIsOpen, setIsOpen] = useState(false);
   const [formValues, setformValues] = useState({
     name: "",
@@ -30,40 +27,25 @@ function EventSideBar({ selectedDate, isClient }) {
   });
   const [selectedTimeSlot, setselectedTimeSlot] = useState({});
   const [selectedAgent, setselectedAgent] = useState(null);
+  const [agentOption, setagentOption] = useState(null);
+  const [timeSlotOptions, settimeSlotOptions] = useState(null);
 
   useEffect(() => {
     const getAgents = async () => {
       let response = await getAgentList();
-      console.log(response?.data, "agents");
+      setagentOption(response);
+      setselectedAgent(response[0]?.agent_id);
     };
     getAgents();
   }, []);
 
   useEffect(() => {
     getTimeSlot();
-  }, [selectedDate]);
-
-  const availableTimeSlot = [
-    {
-      start: "09:00",
-      end: "09:30",
-      flagBooked: false,
-    },
-    {
-      start: "09:30",
-      end: "10:00",
-      flagBooked: true,
-    },
-    {
-      start: "10:00",
-      end: "10:30",
-      flagBooked: false,
-    },
-  ];
+  }, [defaultDate, selectedAgent]);
 
   const getTimeSlot = async () => {
-    let response = await fetchSlotsFromDate(selectedDate, selectedAgent);
-    console.log(response?.data);
+    let response = await fetchSlotsFromDate(defaultDate, selectedAgent);
+    settimeSlotOptions(response);
   };
   const onChangeHandler = (e) => {
     setformValues({ ...formValues, [e.target.name]: e.target.value });
@@ -87,50 +69,55 @@ function EventSideBar({ selectedDate, isClient }) {
     openModal();
   };
 
-  const onSlotBook = () => {};
+  const onSlotBook = async (e) => {
+    e.preventDefault();
+    const dataToBookSlot = {
+      agent_id: selectedAgent,
+      date: defaultDate,
+      start: selectedTimeSlot?.start,
+      end: selectedTimeSlot?.end,
+      customer: {
+        customer_id: 0,
+        customer_name: formValues?.name,
+        customer_mobile_no: formValues?.phone,
+        customer_email_id: formValues?.email,
+        product_type: formValues?.productType,
+      },
+    };
+    const response = await bookSlot(dataToBookSlot).then((e) => {
+      closeModal();
+
+      getTimeSlot();
+    });
+    toast.success("Booking Confirmed", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "light",
+    });
+  };
   const handelOnAgentChange = (e) => {
-    console.log(e?.target?.value);
     setselectedAgent(e?.target?.value);
     getTimeSlot();
   };
+  const selectedAgentName = agentOption?.filter(
+    (e) => e.agent_id === selectedAgent
+  )?.[0]?.agent_name;
 
-  const agentOptions = [
-    {
-      agent_id: 3,
-      agent_name: "Zack",
-    },
-    {
-      agent_id: 123,
-      agent_name: "Default Agent Name",
-    },
-    {
-      agent_id: 2,
-      agent_name: "Cody",
-    },
-    {
-      agent_id: 4,
-      agent_name: "Cody",
-    },
-    {
-      agent_id: 11,
-      agent_name: "Default Agent Name",
-    },
-    {
-      agent_id: 1,
-      agent_name: "Zack",
-    },
-  ];
-
-  console.log("stat", formValues, selectedTimeSlot);
   return (
     <>
       {" "}
       <div className={"evnt-side-bar-hero-container"}>
         <div className="display-center">
           {/* Available Time Slots - {selectedDate || defaultDate} */}
-          {isClient && (
+          {isClient ? (
             <>
-              <p>Select agent to book slots</p>
+              <p>Selected Date : {defaultDate}</p>
+
+              {/* <p>Select agent to book slots</p> */}
               <div className="input-agent">
                 <label>Agent</label>
                 <select
@@ -138,7 +125,7 @@ function EventSideBar({ selectedDate, isClient }) {
                   name="agentName"
                   onChange={handelOnAgentChange}
                 >
-                  {agentOptions?.map((agent) => (
+                  {agentOption?.map((agent) => (
                     <option key={agent?.agent_id} value={agent?.agent_id}>
                       {agent?.agent_name}
                     </option>
@@ -146,15 +133,20 @@ function EventSideBar({ selectedDate, isClient }) {
                 </select>
               </div>
             </>
+          ) : (
+            <>
+              <p>Selected Date : {defaultDate}</p>
+              <p>{selectedAgentName} </p>
+            </>
           )}
         </div>
         <div className={"evnt-time-slot-section"}>
-          {availableTimeSlot?.map((time, index) => (
+          {timeSlotOptions?.map((time, index) => (
             <span
-              key={time?.start}
-              onClick={() => onSelectingTimeSlot(time)}
+              key={time?.start + index}
+              onClick={() => (isClient ? onSelectingTimeSlot(time) : {})}
               className={`${
-                time?.flagBooked === true
+                time?.flagBooked === false
                   ? `evnt-time-mrg`
                   : `evnt-time-mrg-disable`
               }`}
@@ -164,6 +156,12 @@ function EventSideBar({ selectedDate, isClient }) {
               >
                 {time?.start} - {time?.end}
               </span>
+              {!isClient && time?.flagBooked === true && (
+                <span className="cur-point">
+                  <Image src={callIcon} width={30} height={30} alt="icon" />
+                </span>
+              )}
+
               {/* <span className="horizental-line"></span> */}
             </span>
           ))}
@@ -173,8 +171,8 @@ function EventSideBar({ selectedDate, isClient }) {
         <>
           <div className="modal-heading">
             <div>
-              Book Time Slot for {selectedTimeSlot?.timeSlotStart} -{" "}
-              {selectedTimeSlot?.timeSlotEnd}
+              Book Time Slot for {selectedTimeSlot?.start} -{" "}
+              {selectedTimeSlot?.end}
             </div>
           </div>
           <div className="modal-body">
@@ -227,10 +225,13 @@ function EventSideBar({ selectedDate, isClient }) {
                 value={formValues?.message}
               />
             </div>
-            <button className="cutm-button">Book Slot</button>
+            <button className="cutm-button" onClick={onSlotBook}>
+              Book Slot
+            </button>
           </div>
         </>
       </Modal>
+      <ToastContainer />
     </>
   );
 }

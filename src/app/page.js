@@ -10,6 +10,7 @@ export default function Home() {
   const onDaySelection = (date) => {
     setselectedDate(date);
   };
+
   return (
     <div className={styles.homePageContainer}>
       <div style={{ width: "74%" }}>

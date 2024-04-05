@@ -10,7 +10,6 @@ function CalendarComponent({ onDaySelection, eventToSend, onEventSelect }) {
   const handleSelect = ({ start }) => {
     let startDate = moment(start).format("YYYY-MM-DD");
     onDaySelection(startDate);
-    console.log(startDate, "start");
   };
 
   return (
