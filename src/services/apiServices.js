@@ -16,13 +16,7 @@ export const bookSlot = async () => {
 
 export const getAgentList = async () => {
   try {
-    const response = await axiosBase.get(`/agents/`, {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
-        "Access-Control-Allow-Credentials": true,
-      },
-    });
+    const response = await axiosBase.get(`/agents/`);
     return response.data;
   } catch (error) {
     console.log(error);
