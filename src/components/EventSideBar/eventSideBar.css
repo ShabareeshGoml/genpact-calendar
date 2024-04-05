@@ -12,7 +12,7 @@
 .evnt-time-slot-section {
   display: flex;
   flex-direction: column;
-  gap: 26px;
+  gap: 16px;
   margin: 18px 6px;
 }
 
@@ -25,17 +25,35 @@
 }
 
 .evnt-time-mrg {
+  border-radius: 6px;
+  padding: 10px;
+  height: 55px;
+  background-color: #007fff;
   display: flex;
-  gap: 4px;
+  gap: 2px;
   align-items: center;
+  color: #fff;
+  font-size: larger;
+  cursor: pointer;
 }
 
-.horizental-line {
+.evnt-time-mrg-disable {
+  border-radius: 6px;
+  padding: 10px;
+  height: 55px;
+  background-color: #add8e6;
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  color: #7e7e7e;
+  font-size: larger;
+}
+
+/* .horizental-line {
   width: 100%;
   height: 1px;
   background-color: #fd5c63;
-  /* opacity: 0.5; */
-}
+} */
 
 /* width */
 ::-webkit-scrollbar {
@@ -79,9 +97,24 @@
   font-size: larger;
 }
 
+.input-agent {
+  margin-top: 20px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-around;
+  font-size: large;
+}
 .input-container {
   height: 40px;
   width: 320px;
+  border: 1px solid #000;
+  border-radius: 5px;
+}
+
+.select-container {
+  height: 34px;
+  width: 200px;
   border: 1px solid #000;
   border-radius: 5px;
 }

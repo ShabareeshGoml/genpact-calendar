@@ -16,7 +16,7 @@ export default function Home() {
         <CalendarComponent onDaySelection={(date) => onDaySelection(date)} />
       </div>
       <div style={{ width: "22%", maxHeight: "99dvh" }}>
-        <EventSideBar selectedDate={selectedDate} />
+        <EventSideBar selectedDate={selectedDate} isClient={true} />
       </div>
     </div>
   );

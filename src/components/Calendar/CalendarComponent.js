@@ -8,7 +8,7 @@ moment.locale("en-GB");
 const localizer = momentLocalizer(moment);
 function CalendarComponent({ onDaySelection, eventToSend, onEventSelect }) {
   const handleSelect = ({ start }) => {
-    let startDate = moment(start).format("MM/DD/YYYY");
+    let startDate = moment(start).format("YYYY-MM-DD");
     onDaySelection(startDate);
     console.log(startDate, "start");
   };
