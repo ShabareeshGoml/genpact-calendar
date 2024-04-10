@@ -1,0 +1,17 @@
+.product-hero-conatiner {
+  width: 85%;
+  margin: 22px auto;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 24px;
+}
+
+.product-page-layout-container {
+  width: 85%;
+  margin: 28px auto;
+}
+
+.product-hero-heading-text {
+  font-size: 30px;
+}

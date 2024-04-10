@@ -1,0 +1,20 @@
+.product-card-hero-container {
+  width: 190px;
+  height: 170px;
+  padding: 25px;
+  box-shadow: 2px 2px 2px 1px lightblue;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: #add8e6;
+  cursor: pointer;
+}
+
+.product-card-number {
+  padding: 2px 7px;
+  border-radius: 50px;
+  width: 24px;
+  background-color: #007fff;
+  color: white;
+}

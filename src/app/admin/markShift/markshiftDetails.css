@@ -1,0 +1,71 @@
+.shift-hero-container {
+  width: 80%;
+  margin: 40px auto;
+}
+
+.shift-input-fields-hero-container {
+  margin: 20px;
+}
+
+.shift-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+  width: 50%;
+}
+
+.shift-input-label {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.shift-input {
+  height: 35px;
+  width: 70%;
+  border: 2px solid #000;
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.shift-submit-button-container {
+  width: 85%;
+  margin-bottom: 20px;
+}
+
+.shift-submit-button {
+  padding: 8px 10px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 18px;
+  float: inline-end;
+  cursor: pointer;
+}
+.shift-submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.shift-duo-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+@media screen and (max-width: 747px) {
+  .shift-duo-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .shift-input-container {
+    width: 100%;
+  }
+  .shift-input {
+    height: 35px;
+    width: 85%;
+  }
+
+  /* Your styles for mobile screens here */
+}
