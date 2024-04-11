@@ -1,0 +1,28 @@
+.header-hero-container {
+  background-color: #007fff;
+  width: 100dvw;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 600;
+  padding: 10px;
+}
+
+.flex-class-nav {
+  padding: 10px 5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-bar {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+}
+
+.pointer {
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 400;
+}

@@ -42,3 +42,13 @@ export const bookTimeSlot = async (schedule) => {
     console.log(error);
   }
 };
+
+export const fetchCustomerDetails = async (cusID) => {
+  try {
+    const response = await axiosBase.get(`/userDetail/${cusID}`);
+    let data = response?.data;
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};

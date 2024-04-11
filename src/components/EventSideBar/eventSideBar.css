@@ -2,7 +2,7 @@
   /* background-color: aquamarine; */
   padding-top: 22px;
   border: 2px solid #000;
-  height: 90dvh;
+  height: 81dvh;
   overflow: scroll;
   max-width: "20%";
   overflow-y: scroll;
@@ -140,4 +140,9 @@
   font-weight: 500;
   font-size: large;
   cursor: pointer;
+}
+
+.cutm-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

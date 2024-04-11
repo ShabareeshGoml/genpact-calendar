@@ -21,15 +21,14 @@ import {
 import { fetchAllAgents } from "@/services/apiServices/markShift";
 // import callIcon from "../../assets/icons/call.png";
 
-function EventSideBar({ selectedDate, isClient, productId }) {
+function EventSideBar({ selectedDate, isClient, productId, userInfo }) {
   const defaultDate = selectedDate || moment(new Date()).format("YYYY-MM-DD");
   const [modalIsOpen, setIsOpen] = useState(false);
   const [formValues, setformValues] = useState({
-    name: "",
-    email: "",
+    name: userInfo?.username,
+    email: userInfo?.email_id,
     message: "",
-    productType: "",
-    phone: "",
+    phone: userInfo?.mobile_no,
   });
   const [selectedTimeSlot, setselectedTimeSlot] = useState({});
   const [selectedAgent, setselectedAgent] = useState(null);
@@ -41,13 +40,15 @@ function EventSideBar({ selectedDate, isClient, productId }) {
       setagentOption(agent);
       setselectedAgent(agent[0]?.id);
     });
-    // const getAgents = async () => {
-    //   let response = await getAgentList();
-    //   setagentOption(response);
-    //   setselectedAgent(response[0]?.id);
-    // };
-    // getAgents();
   }, []);
+  useEffect(() => {
+    setformValues({
+      name: userInfo?.username,
+      email: userInfo?.email_id,
+      message: "",
+      phone: userInfo?.mobile_no,
+    });
+  }, [userInfo]);
 
   useEffect(() => {
     if (isClient) {
@@ -74,13 +75,13 @@ function EventSideBar({ selectedDate, isClient, productId }) {
 
   function closeModal() {
     setIsOpen(false);
-    setformValues({
-      name: "",
-      email: "",
-      message: "",
-      productType: "",
-      phone: "",
-    });
+    // setformValues({
+    //   name: "",
+    //   email: "",
+    //   message: "",
+    //   // productType: "",
+    //   phone: "",
+    // });
   }
   const onSelectingTimeSlot = (time) => {
     setselectedTimeSlot(time);
@@ -89,37 +90,38 @@ function EventSideBar({ selectedDate, isClient, productId }) {
 
   const onSlotBook = (e) => {
     e.preventDefault();
-    const customerInfo = {
-      username: formValues?.name,
-      email_id: formValues?.email,
-      mobile_no: formValues?.phone,
+    // const customerInfo = {
+    //   username: formValues?.name,
+    //   email_id: formValues?.email,
+    //   mobile_no: formValues?.phone,
+    // };
+    // console.log(customerInfo, "on Button Press");
+    // createCustomerId(customerInfo).then(async (e) => {
+    //   console.log(e, "customerCreated");
+
+    // });
+    const schedule = {
+      customer_id: userInfo?.id,
+      schedule_id: selectedTimeSlot?.id,
+      from_time: selectedTimeSlot?.start,
+      to_time: selectedTimeSlot?.end,
+      apt_details: formValues?.message,
     };
-    console.log(customerInfo, "on Button Press");
-    createCustomerId(customerInfo).then(async (e) => {
-      console.log(e, "customerCreated");
-      const schedule = {
-        customer_id: e,
-        schedule_id: selectedTimeSlot?.id,
-        from_time: selectedTimeSlot?.start,
-        to_time: selectedTimeSlot?.end,
-        apt_details: formValues?.message,
-      };
-      console.log(schedule, "schedule");
-      await bookTimeSlot(schedule).then((slotConfirm) => {
-        console.log(slotConfirm, "bookSlot");
-        fetchAvailableSlots(productId, defaultDate, "customer").then((e) =>
-          settimeSlotOptions(e)
-        );
-        closeModal();
-        toast.success("Booking Confirmed", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "light",
-        });
+    console.log(schedule, "schedule");
+    bookTimeSlot(schedule).then((slotConfirm) => {
+      console.log(slotConfirm, "bookSlot");
+      fetchAvailableSlots(productId, defaultDate, "customer").then((e) =>
+        settimeSlotOptions(e)
+      );
+      closeModal();
+      toast.success("Booking Confirmed", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
       });
     });
 
@@ -174,7 +176,7 @@ function EventSideBar({ selectedDate, isClient, productId }) {
   //   (e) => e.agent_id === selectedAgent
   // )?.[0]?.agent_name;
 
-  console.log(selectedTimeSlot, "productIdOjj");
+  console.log(formValues, isBookDisable, "test2");
 
   return (
     <>
