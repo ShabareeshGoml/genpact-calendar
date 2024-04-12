@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
@@ -22,6 +21,8 @@ import "react-responsive-modal/styles.css";
 import ButtonComponent from "@/components/Button/ButtonComponent";
 import { useRouter } from "next/navigation";
 import { fetchBookedSlotsOfAgent } from "@/services/apiServices/agentUpcomming";
+import TableCell, { tableCellClasses } from "@mui/material/TableCell";
+import { styled } from "@mui/material/styles";
 
 function BookedAppointments() {
   const router = useRouter();
@@ -36,6 +37,25 @@ function BookedAppointments() {
   const [appointmentDetails, setAppointmentDetails] = useState([]);
   const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
 
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: theme.palette.common.black,
+      color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 14,
+    },
+  }));
+
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    "&:last-child td, &:last-child th": {
+      border: 0,
+    },
+  }));
   function openModal() {
     setRescheduleModalOpen(true);
   }
@@ -77,33 +97,63 @@ function BookedAppointments() {
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Date</TableCell>
-              <TableCell align="right">Start Time</TableCell>
-              <TableCell align="right">End Time</TableCell>
-              <TableCell align="right">User Name</TableCell>
-              <TableCell align="right">Email</TableCell>
-              <TableCell align="right">Product</TableCell>
-              {/* <TableCell align="right">Actions</TableCell> */}
+              <StyledTableCell>Appointment Date</StyledTableCell>
+              <StyledTableCell align="right">
+                Mail Initiated Date
+              </StyledTableCell>
+              <StyledTableCell align="right">
+                Appointment Booked Date
+              </StyledTableCell>
+
+              <StyledTableCell align="right">Start Time</StyledTableCell>
+              <StyledTableCell align="right">End Time</StyledTableCell>
+              <StyledTableCell align="right">User Name</StyledTableCell>
+              <StyledTableCell align="right">Email</StyledTableCell>
+              <StyledTableCell align="right">Phone</StyledTableCell>
+              <StyledTableCell align="right">Description</StyledTableCell>
+              <StyledTableCell align="right">Product</StyledTableCell>
+              {/* <StyledTableCell align="right">Actions</StyledTableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
             {appointmentDetails &&
               appointmentDetails?.map((row) => (
-                <TableRow
+                <StyledTableRow
                   key={row.id}
                   sx={{ "&:last-child td, &:last-child th": { border: "2px" } }}
                 >
-                  <TableCell component="th" scope="row">
+                  <StyledTableCell component="th" scope="row">
                     {row.date}
-                  </TableCell>
-                  <TableCell align="right">{row.start_time}</TableCell>
-                  <TableCell align="right">{row.end_time}</TableCell>
-                  <TableCell align="right">{row.username}</TableCell>
-                  <TableCell align="right">{row?.email_id}</TableCell>
-                  {/* <TableCell align="right">{row.apt_details}</TableCell> */}
-                  <TableCell align="right">Health Care</TableCell>
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {row.created_at?.substring(0, 10) || row?.date}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {row.scheduled_at?.substring(0, 10) || row?.date}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {row.start_time}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {row.end_time}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {row.username}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {row?.email_id}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {row.mobile_no}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {row.appointment_description}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    Health Care/Insurance
+                  </StyledTableCell>
 
-                  {/* <TableCell align="right">
+                  {/* <StyledTableCell align="right">
                     <div className="app-action-container">
                       <EditIcon
                         className="cr-ptr"
@@ -114,8 +164,8 @@ function BookedAppointments() {
                         onClick={() => onCancelscheduleClick()}
                       />
                     </div>
-                  </TableCell> */}
-                </TableRow>
+                  </StyledTableCell> */}
+                </StyledTableRow>
               ))}
           </TableBody>
         </Table>

@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
@@ -21,6 +20,8 @@ import { Modal } from "react-responsive-modal";
 import "react-responsive-modal/styles.css";
 import ButtonComponent from "@/components/Button/ButtonComponent";
 import { useRouter } from "next/navigation";
+import TableCell, { tableCellClasses } from "@mui/material/TableCell";
+import { styled } from "@mui/material/styles";
 
 function BookedAppointments() {
   const router = useRouter();
@@ -35,6 +36,25 @@ function BookedAppointments() {
   const [appointmentDetails, setAppointmentDetails] = useState([]);
   const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
 
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: theme.palette.common.black,
+      color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 14,
+    },
+  }));
+
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    "&:last-child td, &:last-child th": {
+      border: 0,
+    },
+  }));
   function openModal() {
     setRescheduleModalOpen(true);
   }
@@ -76,31 +96,33 @@ function BookedAppointments() {
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Date</TableCell>
-              <TableCell align="right">Start Time</TableCell>
-              <TableCell align="right">End Time</TableCell>
-              {/* <TableCell align="right">Agent</TableCell> */}
-              <TableCell align="right">Description</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              <StyledTableCell>Date</StyledTableCell>
+              <StyledTableCell align="right">Start Time</StyledTableCell>
+              <StyledTableCell align="right">End Time</StyledTableCell>
+              {/* <StyledTableCell align="right">Agent</StyledTableCell> */}
+              <StyledTableCell align="right">Description</StyledTableCell>
+              <StyledTableCell align="right">Actions</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {appointmentDetails?.map((row) => (
-              <TableRow
+              <StyledTableRow
                 key={row.id}
                 sx={{ "&:last-child td, &:last-child th": { border: "2px" } }}
               >
-                <TableCell component="th" scope="row">
+                <StyledTableCell component="th" scope="row">
                   {row.date}
-                </TableCell>
-                <TableCell align="right">{row.start_time}</TableCell>
-                <TableCell align="right">{row.end_time}</TableCell>
-                {/* <TableCell align="right">{row.agent}</TableCell> */}
-                <TableCell align="right">
+                </StyledTableCell>
+                <StyledTableCell align="right">
+                  {row.start_time}
+                </StyledTableCell>
+                <StyledTableCell align="right">{row.end_time}</StyledTableCell>
+                {/* <StyledTableCell align="right">{row.agent}</StyledTableCell> */}
+                <StyledTableCell align="right">
                   {row.appointment_description}
-                </TableCell>
+                </StyledTableCell>
 
-                <TableCell align="right">
+                <StyledTableCell align="right">
                   <div className="app-action-container">
                     <EditIcon
                       className="cr-ptr"
@@ -111,8 +133,8 @@ function BookedAppointments() {
                       onClick={() => onCancelscheduleClick()}
                     />
                   </div>
-                </TableCell>
-              </TableRow>
+                </StyledTableCell>
+              </StyledTableRow>
             ))}
           </TableBody>
         </Table>

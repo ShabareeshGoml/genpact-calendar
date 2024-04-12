@@ -61,12 +61,15 @@ function Header() {
     },
   ];
   let selectedNav = pathname?.includes("customer") ? customerNav : agentNav;
+  let portlaName = pathname?.includes("customer")
+    ? "Customer Portal"
+    : "Agent Portal";
   // console.log(pathname, "pathname");
 
   return (
     <div className="header-hero-container">
       <div className="flex-class-nav">
-        <div className="heading">Genpact Calendar</div>
+        <div className="heading">Genpact Calendar - {portlaName}</div>
         <div className="nav-bar">
           {selectedNav?.map((nav) => (
             <span
