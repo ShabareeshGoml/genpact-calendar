@@ -1,0 +1,41 @@
+.app-table-hero-container {
+  width: 95%;
+  margin: 20px auto;
+}
+
+.app-action-container {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.cr-ptr {
+  cursor: pointer;
+}
+
+.modal-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+}
+
+.modal-body {
+  margin-top: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-button-container {
+  margin-top: 24px;
+  display: flex;
+  gap: 14px;
+  justify-content: flex-end;
+}
+
+.zero-data {
+  font-size: 18px;
+  padding: 20px;
+}

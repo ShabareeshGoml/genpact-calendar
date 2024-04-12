@@ -3,12 +3,15 @@ import React from "react";
 import "./header.css";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 function Header() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
   const customerId = searchParams.get("customer_id");
   const productId = searchParams.get("product_id");
+  const agentId = searchParams.get("agent_id");
 
   const onBookingClick = () => {
     router.push(
@@ -27,17 +30,60 @@ function Header() {
       }
     );
   };
+  const customerNav = [
+    {
+      id: 1,
+      name: "Booking",
+      function: onBookingClick,
+    },
+    {
+      id: 2,
+      name: "Booked appointment",
+      function: onBookedAppointmentClick,
+    },
+  ];
+
+  const agentNav = [
+    {
+      id: 1,
+      name: "Booked appointment",
+      // function: onBookingClick,
+    },
+    {
+      id: 2,
+      name: "Pending appointment",
+      // function: onBookedAppointmentClick,
+    },
+    {
+      id: 3,
+      name: "Cancelled appointment",
+      // function: onBookedAppointmentClick,
+    },
+  ];
+  let selectedNav = pathname?.includes("customer") ? customerNav : agentNav;
+  // console.log(pathname, "pathname");
+
   return (
     <div className="header-hero-container">
       <div className="flex-class-nav">
         <div className="heading">Genpact Calendar</div>
         <div className="nav-bar">
-          <span className="pointer" onClick={onBookingClick}>
+          {selectedNav?.map((nav) => (
+            <span
+              className="pointer"
+              onClick={nav?.function}
+              id={nav?.id}
+              key={nav?.id}
+            >
+              {nav?.name}
+            </span>
+          ))}
+          {/* <span className="pointer" onClick={onBookingClick}>
             Booking
           </span>
           <span className="pointer" onClick={onBookedAppointmentClick}>
             Booked appointment
-          </span>
+          </span> */}
         </div>
       </div>
     </div>

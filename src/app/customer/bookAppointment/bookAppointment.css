@@ -1,0 +1,132 @@
+.book-hero-container {
+  width: 65%;
+  margin: 40px auto !important;
+}
+.book-label {
+  color: #19181a;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 36px;
+}
+.book-calendar-container {
+  margin: 20px 0 26px;
+}
+.calendar-react {
+  width: 60dvw;
+  box-shadow: 0px 1px 3px 0px #130a2e21;
+
+  box-shadow: 0px 3px 14px 0px #130a2e08;
+
+  box-shadow: 0px 8px 32px 0px #130a2e12;
+
+  box-shadow: 0px 30px 34px 0px #130a2e14;
+  border: none;
+  border-radius: 8px;
+}
+
+.react-calendar__month-view__weekdays__weekday > abbr {
+  text-decoration: none;
+}
+.react-calendar__tile {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 22px;
+}
+.react-calendar__tile--active {
+  /* background-color: aqua; */
+  border-radius: 28px;
+  width: 10px;
+}
+
+.react-calendar__tile--hover {
+  /* background-color: aqua; */
+  border-radius: 28px;
+  width: 10px;
+}
+.react-calendar__tile--now {
+  background-color: #f3f2f5;
+  border-radius: 28px;
+}
+
+.book-slot-picker-hero-container {
+  box-shadow: 0px 1px 3px 0px #130a2e21;
+
+  box-shadow: 0px 3px 14px 0px #130a2e08;
+
+  box-shadow: 0px 8px 32px 0px #130a2e12;
+
+  box-shadow: 0px 30px 34px 0px #130a2e14;
+  border: none;
+  border-radius: 8px;
+  width: 60dvw;
+  background-color: white;
+  margin: 28px 0;
+  padding: 28px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.book-slot-cnt {
+  /* background-color: #007fff; */
+  background-color: #f3f2f5;
+  /* color: #fff; */
+  color: #19181a;
+  height: 40px;
+  width: 164px;
+  border-radius: 15px;
+  margin: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.book-slot-cnt-selected {
+  background-color: #007fff;
+  color: #fff;
+}
+
+.book-btn-container {
+  width: 93%;
+  display: flex;
+  justify-content: flex-end;
+}
+.book-btn-dual-cntr {
+  width: 93%;
+  display: flex;
+  justify-content: space-between;
+}
+.time-zone-picker-cnt {
+  width: 60dvw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inputField-ctmz {
+  width: 50dvw;
+  /* height: 40px; */
+}
+@media screen and (max-width: 580px) {
+  .book-slot-picker-hero-container {
+    width: 90dvw;
+    margin: auto;
+  }
+  .time-zone-picker-cnt {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .calendar-react {
+    width: 90dvw;
+    margin: auto;
+  }
+  .book-hero-container {
+    width: 95dvw;
+    margin: 40px auto;
+  }
+  .book-btn-dual-cntr {
+    margin: 10px;
+    gap: 22px;
+    flex-direction: column;
+  }
+}

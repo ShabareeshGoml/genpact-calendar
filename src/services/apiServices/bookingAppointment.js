@@ -21,6 +21,16 @@ export const fetchAvailableSlots = async (
     console.log(error);
   }
 };
+export const createAppointment = async (schedule) => {
+  try {
+    const response = await axiosBase.post(`/appointment/create`, schedule);
+    return response?.data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+///appointment/create
 
 export const createCustomerId = async (customer) => {
   try {
@@ -48,6 +58,17 @@ export const fetchCustomerDetails = async (cusID) => {
     const response = await axiosBase.get(`/userDetail/${cusID}`);
     let data = response?.data;
     return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getAgent = async (prodId, date) => {
+  try {
+    const response = await axiosBase.get(`/slots/${prodId}/${date}`, {
+      headers: { type: "agent" },
+    });
+    return response?.data;
   } catch (error) {
     console.log(error);
   }

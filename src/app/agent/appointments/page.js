@@ -21,14 +21,15 @@ import { Modal } from "react-responsive-modal";
 import "react-responsive-modal/styles.css";
 import ButtonComponent from "@/components/Button/ButtonComponent";
 import { useRouter } from "next/navigation";
+import { fetchBookedSlotsOfAgent } from "@/services/apiServices/agentUpcomming";
 
 function BookedAppointments() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const customerId = searchParams.get("customer_id");
-  const productId = searchParams.get("product_id");
+  const agentId = searchParams.get("agent_id");
+  // const productId = searchParams.get("product_id");
   useEffect(() => {
-    fetchBookedSlotsOfCustomer(customerId).then((e) => {
+    fetchBookedSlotsOfAgent(agentId).then((e) => {
       setAppointmentDetails(e);
     });
   }, []);
@@ -79,45 +80,47 @@ function BookedAppointments() {
               <TableCell>Date</TableCell>
               <TableCell align="right">Start Time</TableCell>
               <TableCell align="right">End Time</TableCell>
-              {/* <TableCell align="right">Agent</TableCell> */}
-              <TableCell align="right">Description</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              <TableCell align="right">User Name</TableCell>
+              <TableCell align="right">Email</TableCell>
+              <TableCell align="right">Product</TableCell>
+              {/* <TableCell align="right">Actions</TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
-            {appointmentDetails?.map((row) => (
-              <TableRow
-                key={row.id}
-                sx={{ "&:last-child td, &:last-child th": { border: "2px" } }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.date}
-                </TableCell>
-                <TableCell align="right">{row.start_time}</TableCell>
-                <TableCell align="right">{row.end_time}</TableCell>
-                {/* <TableCell align="right">{row.agent}</TableCell> */}
-                <TableCell align="right">
-                  {row.appointment_description}
-                </TableCell>
+            {appointmentDetails &&
+              appointmentDetails?.map((row) => (
+                <TableRow
+                  key={row.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: "2px" } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.date}
+                  </TableCell>
+                  <TableCell align="right">{row.start_time}</TableCell>
+                  <TableCell align="right">{row.end_time}</TableCell>
+                  <TableCell align="right">{row.username}</TableCell>
+                  <TableCell align="right">{row?.email_id}</TableCell>
+                  {/* <TableCell align="right">{row.apt_details}</TableCell> */}
+                  <TableCell align="right">Health Care</TableCell>
 
-                <TableCell align="right">
-                  <div className="app-action-container">
-                    <EditIcon
-                      className="cr-ptr"
-                      onClick={() => onRescheduleClick()}
-                    />
-                    <DeleteIcon
-                      className="cr-ptr"
-                      onClick={() => onCancelscheduleClick()}
-                    />
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+                  {/* <TableCell align="right">
+                    <div className="app-action-container">
+                      <EditIcon
+                        className="cr-ptr"
+                        onClick={() => onRescheduleClick()}
+                      />
+                      <DeleteIcon
+                        className="cr-ptr"
+                        onClick={() => onCancelscheduleClick()}
+                      />
+                    </div>
+                  </TableCell> */}
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
-      <Modal open={rescheduleModalOpen} onClose={closeModal} center>
+      {/* <Modal open={rescheduleModalOpen} onClose={closeModal} center>
         <>
           <div className="modal-heading">
             <div>Reschedule - Appointment</div>
@@ -135,7 +138,7 @@ function BookedAppointments() {
           </div>
         </>
       </Modal>
-      <ToastContainer />
+      <ToastContainer /> */}
     </div>
   );
 }

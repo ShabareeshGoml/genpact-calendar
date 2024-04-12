@@ -1,16 +1,17 @@
 import React from "react";
 import Button from "@mui/material/Button";
 
-function ButtonComponent({ name, onClick }) {
+function ButtonComponent({ name, onClick, disabled, variant }) {
   return (
     <Button
-      variant="contained"
-      style={{
-        backgroundColor: "#000",
-        fontSize: "14px",
-        color: "#fff",
-      }}
+      variant={variant}
+      // style={{
+      //   backgroundColor: "#006edc",
+      //   fontSize: "14px",
+      //   color: "#fff",
+      // }}
       onClick={() => onClick()}
+      disabled={disabled}
     >
       {name}
     </Button>

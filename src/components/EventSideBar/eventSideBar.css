@@ -102,6 +102,7 @@
   gap: 10px;
   align-items: flex-start;
   font-size: larger;
+  margin: 10px 25px;
 }
 
 .input-agent {
@@ -114,8 +115,8 @@
 }
 .input-container {
   height: 40px;
-  width: 320px;
-  border: 1px solid #000;
+  width: 280px;
+  border: 2px solid #007fff;
   border-radius: 5px;
 }
 
@@ -127,7 +128,7 @@
 }
 
 .input-txtArea {
-  width: 320px;
+  width: 280px;
   height: 100px;
 }
 
@@ -135,6 +136,7 @@
   background-color: #000;
   border: none;
   height: 40px;
+  width: 280px;
   color: #fff;
   border-radius: 6px;
   font-weight: 500;
@@ -145,4 +147,12 @@
 .cutm-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.inside-box-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+  margin-bottom: 6px;
 }

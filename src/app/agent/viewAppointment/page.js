@@ -1,12 +1,15 @@
 "use client";
 import CalendarComponent from "@/components/Calendar/CalendarComponent";
 import React, { useState } from "react";
-import styles from "../../../page.module.css";
+import styles from "../../page.module.css";
 import EventSideBar from "@/components/EventSideBar/EventSideBar";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 
 function agentView() {
-  const { productId } = useParams();
+  const searchParams = useSearchParams();
+  const agentId = searchParams.get("agent_id");
+  const productId = searchParams.get("product_id");
+
   const [selectedDate, setselectedDate] = useState(null);
   const onDaySelection = (date) => {
     setselectedDate(date);
@@ -21,6 +24,7 @@ function agentView() {
           selectedDate={selectedDate}
           isClient={false}
           productId={productId}
+          agentId={agentId}
         />
       </div>
     </div>
