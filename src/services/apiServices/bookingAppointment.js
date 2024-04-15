@@ -73,3 +73,28 @@ export const getAgent = async (prodId, date) => {
     console.log(error);
   }
 };
+
+export const getAppointmentDetails = async (appID) => {
+  try {
+    const response = await axiosBase.get(`/appointments/description/${appID}`, {
+      headers: { type: "agent" },
+    });
+    return response?.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+///update_appointment/3
+
+export const updateAppointment = async (appID, schedule) => {
+  try {
+    const response = await axiosBase.post(
+      `/update_appointment/${appID}`,
+      schedule
+    );
+    return response?.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

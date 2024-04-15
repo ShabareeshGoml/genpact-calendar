@@ -13,8 +13,9 @@ const inter = Inter({ subsets: ["latin"] });
  
 export default function RootLayout({ children }) {
   const pathname = usePathname();
-  let isLogin = pathname?.includes("login");
+  let isLogin = pathname?.includes("login") || pathname === "/";
   let isAdmin = pathname?.includes("admin");
+  console.log(pathname, "pathname");
   return (
     <html lang="en">
       <body className={inter.className}>

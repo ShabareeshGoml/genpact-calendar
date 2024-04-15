@@ -10,6 +10,8 @@ import {
   createAppointment,
   fetchCustomerDetails,
   getAgent,
+  getAppointmentDetails,
+  updateAppointment,
 } from "@/services/apiServices/bookingAppointment";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -25,12 +27,15 @@ import TextField from "@mui/material/TextField";
 import { isObjectEmpty } from "@/utils/functions";
 import moment from "moment";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function BookAppointment() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const customerId = searchParams.get("customer_id");
   const productId = searchParams.get("product_id");
+  const appointmentID = searchParams.get("appointment_id");
+  //getAppointmentDetails
   useEffect(() => {
     fetchCustomerDetails(customerId).then((e) => {
       setformValues({
@@ -41,13 +46,19 @@ function BookAppointment() {
       });
       // setuserDetails(e);
     });
+    if (appointmentID) {
+      getAppointmentDetails(appointmentID).then((e) => {
+        console.log(e?.appointment_details, "aqua");
+        setappDes(e?.appointment_details[0]?.appointment_description);
+      });
+    }
   }, []);
 
   // const [selectedDate, setselectedDate] = useState(null);
   const [selectedTimeSlot, setselectedTimeSlot] = useState(null);
   const [userDetails, setuserDetails] = useState({});
   const [value, onChange] = useState("");
-
+  const [appDes, setappDes] = useState(null);
   const [timeZone, setTimeZone] = useState("");
   const [showForm, setshowForm] = useState(false);
   const [formValues, setformValues] = useState({
@@ -75,65 +86,93 @@ function BookAppointment() {
   };
 
   const onCreateAppointment = () => {
-    getAgent(productId, moment(new Date(value)).format("YYYY-MM-DD")).then(
-      (agentId) => {
-        console.log(agentId);
-        const schedule = {
-          customer_id: customerId,
-          date: moment(new Date(value)).format("YY-MM-DD"),
-          agent_id: agentId,
-          appointment_description: formValues?.message,
-          start_time: selectedTimeSlot?.start,
-          end_time: selectedTimeSlot?.end,
-        };
-        console.log(schedule, "schedule");
-        createAppointment(schedule).then((slotConfirm) => {
-          if (slotConfirm?.payload?.appointment_id) {
-            console.log(slotConfirm?.payload?.appointment_id, "slot");
-            toast.success("Booking Confirmed", {
-              position: "top-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              theme: "light",
-            });
-            router.push(
-              `/customer/bookedAppointment?customer_id=${customerId}&product_id=${productId}`,
-              {
-                scroll: false,
-              }
-            );
-          } else {
-            toast.error("Booking Failed", {
-              position: "top-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              theme: "light",
-            });
-          }
-        });
-        // .catch((err) => {
-        //   toast.error("Booking Failed", {
-        //     position: "top-right",
-        //     autoClose: 3000,
-        //     hideProgressBar: false,
-        //     closeOnClick: true,
-        //     pauseOnHover: true,
-        //     draggable: true,
-        //     theme: "light",
-        //   });
-        // });
-      }
-    );
+    if (appointmentID) {
+      const schedule = {
+        date: moment(new Date(value)).format("DD-MM-YY"),
+        start_time: selectedTimeSlot?.start,
+        end_time: selectedTimeSlot?.end,
+      };
+      updateAppointment(appointmentID, schedule).then((e) => {
+        console.log(e, "app");
+        if (e?.message === "Appointment updated successfully.") {
+          toast.success(e?.message, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "light",
+          });
+          router.push(
+            `/customer/bookedAppointment?customer_id=${customerId}&product_id=${productId}`,
+            {
+              scroll: false,
+            }
+          );
+        }
+      });
+    } else {
+      getAgent(productId, moment(new Date(value)).format("YYYY-MM-DD")).then(
+        (agentId) => {
+          console.log(agentId);
+          const schedule = {
+            customer_id: customerId,
+            date: moment(new Date(value)).format("YY-MM-DD"),
+            agent_id: agentId,
+            appointment_description: formValues?.message,
+            start_time: selectedTimeSlot?.start,
+            end_time: selectedTimeSlot?.end,
+          };
+          console.log(schedule, "schedule");
+          createAppointment(schedule).then((slotConfirm) => {
+            if (slotConfirm?.payload?.appointment_id) {
+              console.log(slotConfirm?.payload?.appointment_id, "slot");
+              toast.success("Booking Confirmed", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "light",
+              });
+              router.push(
+                `/customer/bookedAppointment?customer_id=${customerId}&product_id=${productId}`,
+                {
+                  scroll: false,
+                }
+              );
+            } else {
+              toast.error("Booking Failed", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "light",
+              });
+            }
+          });
+          // .catch((err) => {
+          //   toast.error("Booking Failed", {
+          //     position: "top-right",
+          //     autoClose: 3000,
+          //     hideProgressBar: false,
+          //     closeOnClick: true,
+          //     pauseOnHover: true,
+          //     draggable: true,
+          //     theme: "light",
+          //   });
+          // });
+        }
+      );
+    }
   };
 
-  let isFormValueDisable = isObjectEmpty(formValues);
-  console.log(formValues, "test");
+  let isFormValueDisable = appointmentID ? false : isObjectEmpty(formValues);
+  console.log(formValues, appDes, "test");
   return (
     <div className="book-hero-container">
       <ToastContainer />
@@ -285,8 +324,9 @@ function BookAppointment() {
                 maxRows={4}
                 name="message"
                 onChange={(e) => onChangeHandler(e)}
-                value={formValues?.message}
+                value={appDes || formValues?.message}
                 className="inputField-ctmz"
+                disabled={appointmentID ? true : false}
               />
               {/* <textarea
             name="message"

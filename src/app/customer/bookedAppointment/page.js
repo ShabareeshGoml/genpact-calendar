@@ -35,6 +35,9 @@ function BookedAppointments() {
   }, []);
   const [appointmentDetails, setAppointmentDetails] = useState([]);
   const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
+  const [cancelModalOpen, setcancelModalOpen] = useState(false);
+
+  const [selectedAppointment, setselectedAppointment] = useState(null);
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -58,16 +61,51 @@ function BookedAppointments() {
   function openModal() {
     setRescheduleModalOpen(true);
   }
+  function openCancelModal() {
+    setcancelModalOpen(true);
+  }
   function closeModal() {
     setRescheduleModalOpen(false);
+  }
+  function closeCancelModal() {
+    setcancelModalOpen(false);
   }
   const onRescheduleClick = () => {
     openModal();
   };
   const onCancelscheduleClick = () => {
-    cancelBookedSlotsOfCustomer(customerId).then((e) => {
+    closeModal();
+    router.push(
+      `/customer/bookAppointment?customer_id=${customerId}&product_id=${productId}&appointment_id=${selectedAppointment}`,
+      {
+        scroll: false,
+      }
+    );
+    // cancelBookedSlotsOfCustomer(selectedAppointment).then((e) => {
+    //   closeModal();
+    //   toast.success("Appointment Cancelled", {
+    //     position: "top-right",
+    //     autoClose: 3000,
+    //     hideProgressBar: false,
+    //     closeOnClick: true,
+    //     pauseOnHover: true,
+    //     draggable: true,
+    //     theme: "light",
+    //   });
+    //   router.push(
+    //     `/customer/bookAppointment?customer_id=${customerId}&product_id=${productId}`,
+    //     {
+    //       scroll: false,
+    //     }
+    //   );
+    // });
+  };
+
+  const onOnlyCancelClick = () => {
+    openCancelModal();
+    cancelBookedSlotsOfCustomer(selectedAppointment).then((e) => {
       closeModal();
-      toast.success("Appointment Cancelled", {
+      toast.success("Appointment Cancelled !!", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -76,12 +114,11 @@ function BookedAppointments() {
         draggable: true,
         theme: "light",
       });
-      router.push(
-        `/customer/bookAppointment?customer_id=${customerId}&product_id=${productId}`,
-        {
-          scroll: false,
-        }
-      );
+      setselectedAppointment(null);
+      closeCancelModal();
+      fetchBookedSlotsOfCustomer(customerId).then((e) => {
+        setAppointmentDetails(e);
+      });
     });
   };
 
@@ -99,7 +136,11 @@ function BookedAppointments() {
               <StyledTableCell>Date</StyledTableCell>
               <StyledTableCell align="right">Start Time</StyledTableCell>
               <StyledTableCell align="right">End Time</StyledTableCell>
-              {/* <StyledTableCell align="right">Agent</StyledTableCell> */}
+              <StyledTableCell align="right">Agent Name</StyledTableCell>
+              <StyledTableCell align="right">Agent email</StyledTableCell>
+
+              <StyledTableCell align="right">Status</StyledTableCell>
+
               <StyledTableCell align="right">Description</StyledTableCell>
               <StyledTableCell align="right">Actions</StyledTableCell>
             </TableRow>
@@ -117,7 +158,13 @@ function BookedAppointments() {
                   {row.start_time}
                 </StyledTableCell>
                 <StyledTableCell align="right">{row.end_time}</StyledTableCell>
-                {/* <StyledTableCell align="right">{row.agent}</StyledTableCell> */}
+                <StyledTableCell align="right">{row.full_name}</StyledTableCell>
+                <StyledTableCell align="right">
+                  {row.agent_email}
+                </StyledTableCell>
+
+                <StyledTableCell align="right">{row.status}</StyledTableCell>
+
                 <StyledTableCell align="right">
                   {row.appointment_description}
                 </StyledTableCell>
@@ -126,11 +173,17 @@ function BookedAppointments() {
                   <div className="app-action-container">
                     <EditIcon
                       className="cr-ptr"
-                      onClick={() => onRescheduleClick()}
+                      onClick={() => {
+                        setselectedAppointment(row?.appointment_id);
+                        onRescheduleClick();
+                      }}
                     />
                     <DeleteIcon
                       className="cr-ptr"
-                      onClick={() => onCancelscheduleClick()}
+                      onClick={() => {
+                        setselectedAppointment(row.appointment_id);
+                        openCancelModal();
+                      }}
                     />
                   </div>
                 </StyledTableCell>
@@ -149,9 +202,29 @@ function BookedAppointments() {
           </div>
           <div className="modal-button-container">
             <ButtonComponent
+              variant={"contained"}
               name={"reschedule"}
               onClick={(e) => {
                 onCancelscheduleClick();
+              }}
+            />
+          </div>
+        </>
+      </Modal>
+      <Modal open={cancelModalOpen} onClose={closeCancelModal} center>
+        <>
+          <div className="modal-heading">
+            <div>Cancell - Appointment</div>
+          </div>
+          <div className="modal-body">
+            <p>Do you really want to cancel the appointment ?</p>
+          </div>
+          <div className="modal-button-container">
+            <ButtonComponent
+              variant={"contained"}
+              name={"Cancel - Appointment"}
+              onClick={(e) => {
+                onOnlyCancelClick();
               }}
             />
           </div>
