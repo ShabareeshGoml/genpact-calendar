@@ -10,7 +10,7 @@ function ButtonComponent({ name, onClick, disabled, variant }) {
       //   fontSize: "14px",
       //   color: "#fff",
       // }}
-      onClick={() => onClick()}
+      onClick={(e) => onClick(e)}
       disabled={disabled}
     >
       {name}

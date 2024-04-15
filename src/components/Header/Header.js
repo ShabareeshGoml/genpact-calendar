@@ -33,7 +33,7 @@ function Header() {
   const customerNav = [
     {
       id: 1,
-      name: "Booking",
+      name: "Schedule new appointment",
       function: onBookingClick,
     },
     {
