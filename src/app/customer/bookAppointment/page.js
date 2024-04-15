@@ -144,7 +144,7 @@ function BookAppointment() {
                 }
               );
             } else {
-              toast.error("Booking Failed", {
+              toast.error(slotConfirm?.message, {
                 position: "top-right",
                 autoClose: 3000,
                 hideProgressBar: false,
@@ -188,8 +188,8 @@ function BookAppointment() {
             />
             {/* <CalendarComponent onDaySelection={(date) => onDaySelection(date)} /> */}
           </div>
-          <div className="time-zone-picker-cnt">
-            <label className="book-label">Pick a time</label>
+          <label className="book-label">Pick a time</label>
+          {/* <div className="time-zone-picker-cnt">
             <FormControl sx={{ m: 1, minWidth: 160 }}>
               <InputLabel id="demo-simple-select-helper-label">
                 Time Zone
@@ -210,9 +210,8 @@ function BookAppointment() {
                 <MenuItem value={20}>Twenty</MenuItem>
                 <MenuItem value={30}>Thirty</MenuItem>
               </Select>
-              {/* <FormHelperText>With label + helper text</FormHelperText> */}
             </FormControl>
-          </div>
+          </div> */}
 
           <div className="book-slot-picker-hero-container">
             {availableSlotTime?.map((slot) => (

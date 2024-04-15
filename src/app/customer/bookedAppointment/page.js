@@ -30,7 +30,10 @@ function BookedAppointments() {
   const productId = searchParams.get("product_id");
   useEffect(() => {
     fetchBookedSlotsOfCustomer(customerId).then((e) => {
-      setAppointmentDetails(e);
+      if (e?.detail === "No record found - 404: Product not found") {
+      } else {
+        setAppointmentDetails(e);
+      }
     });
   }, []);
   const [appointmentDetails, setAppointmentDetails] = useState([]);
@@ -146,49 +149,54 @@ function BookedAppointments() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {appointmentDetails?.map((row) => (
-              <StyledTableRow
-                key={row.id}
-                sx={{ "&:last-child td, &:last-child th": { border: "2px" } }}
-              >
-                <StyledTableCell component="th" scope="row">
-                  {row.date}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {row.start_time}
-                </StyledTableCell>
-                <StyledTableCell align="right">{row.end_time}</StyledTableCell>
-                <StyledTableCell align="right">{row.full_name}</StyledTableCell>
-                <StyledTableCell align="right">
-                  {row.agent_email}
-                </StyledTableCell>
+            {appointmentDetails?.length !== 0 &&
+              appointmentDetails?.map((row) => (
+                <StyledTableRow
+                  key={row.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: "2px" } }}
+                >
+                  <StyledTableCell component="th" scope="row">
+                    {row.date}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {row.start_time}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {row.end_time}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {row.full_name}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {row.agent_email}
+                  </StyledTableCell>
 
-                <StyledTableCell align="right">{row.status}</StyledTableCell>
+                  <StyledTableCell align="right">{row.status}</StyledTableCell>
 
-                <StyledTableCell align="right">
-                  {row.appointment_description}
-                </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {row.appointment_description}
+                  </StyledTableCell>
 
-                <StyledTableCell align="right">
-                  <div className="app-action-container">
-                    <EditIcon
-                      className="cr-ptr"
-                      onClick={() => {
-                        setselectedAppointment(row?.appointment_id);
-                        onRescheduleClick();
-                      }}
-                    />
-                    <DeleteIcon
-                      className="cr-ptr"
-                      onClick={() => {
-                        setselectedAppointment(row.appointment_id);
-                        openCancelModal();
-                      }}
-                    />
-                  </div>
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
+                  <StyledTableCell align="right">
+                    <div className="app-action-container">
+                      <EditIcon
+                        className="cr-ptr"
+                        onClick={() => {
+                          setselectedAppointment(row?.appointment_id);
+                          onRescheduleClick();
+                        }}
+                      />
+                      <DeleteIcon
+                        className="cr-ptr"
+                        onClick={() => {
+                          setselectedAppointment(row.appointment_id);
+                          openCancelModal();
+                        }}
+                      />
+                    </div>
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
