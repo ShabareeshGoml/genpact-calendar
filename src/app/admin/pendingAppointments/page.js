@@ -6,7 +6,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import "./bookedAppointment.css";
+import "../../agent/appointments/bookedAppointment.css";
 import {
   cancelBookedSlotsOfCustomer,
   fetchBookedSlotsOfCustomer,
@@ -24,7 +24,7 @@ import { fetchBookedSlotsOfAgent } from "@/services/apiServices/agentUpcomming";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import { styled } from "@mui/material/styles";
 
-function BookedAppointments() {
+function PendingAppointments() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const agentId = searchParams.get("agent_id");
@@ -97,28 +97,28 @@ function BookedAppointments() {
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <StyledTableCell align="center">Case ID</StyledTableCell>
-              <StyledTableCell align="center">Appointment Date</StyledTableCell>
+              <StyledTableCell>Case ID</StyledTableCell>
+              {/* <StyledTableCell>Appointment Date</StyledTableCell> */}
 
-              <StyledTableCell align="center">
+              <StyledTableCell align="right">
                 Mail Initiated Date
               </StyledTableCell>
-              <StyledTableCell align="center">
+              {/* <StyledTableCell align="right">
                 Appointment Booked Date
               </StyledTableCell>
 
-              <StyledTableCell align="center">Start Time</StyledTableCell>
-              <StyledTableCell align="center">End Time</StyledTableCell>
-              <StyledTableCell align="center">Customer Name</StyledTableCell>
-              <StyledTableCell align="center">Customer Email</StyledTableCell>
-              <StyledTableCell align="center">Customer Phone</StyledTableCell>
-              <StyledTableCell align="center">
+              <StyledTableCell align="right">Start Time</StyledTableCell>
+              <StyledTableCell align="right">End Time</StyledTableCell> */}
+              <StyledTableCell align="right">Customer Name</StyledTableCell>
+              <StyledTableCell align="right">Customer Email</StyledTableCell>
+              <StyledTableCell align="right">Customer Phone</StyledTableCell>
+              {/* <StyledTableCell align="right">
                 Appointment Description
-              </StyledTableCell>
-              <StyledTableCell align="center">Comments</StyledTableCell>
-              <StyledTableCell align="center">Product</StyledTableCell>
+              </StyledTableCell> */}
+              <StyledTableCell align="right">Comments</StyledTableCell>
+              <StyledTableCell align="right">Product</StyledTableCell>
               <StyledTableCell>Action</StyledTableCell>
-              {/* <StyledTableCell align="center">Actions</StyledTableCell> */}
+              {/* <StyledTableCell align="right">Actions</StyledTableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -129,41 +129,41 @@ function BookedAppointments() {
                   key={row.id}
                   sx={{ "&:last-child td, &:last-child th": { border: "2px" } }}
                 >
-                  <StyledTableCell align="center" component="th" scope="row">
+                  <StyledTableCell component="th" scope="row">
                     {row.case_id || "-"}
                   </StyledTableCell>
-                  <StyledTableCell align="center">{row.date}</StyledTableCell>
-                  <StyledTableCell align="center">
+                  {/* <StyledTableCell align="right">{row.date}</StyledTableCell> */}
+                  <StyledTableCell align="right">
                     {row.created_at?.substring(0, 10) || row?.date}
                   </StyledTableCell>
-                  <StyledTableCell align="center">
+                  {/* <StyledTableCell align="right">
                     {row.scheduled_at?.substring(0, 10) || row?.date}
                   </StyledTableCell>
-                  <StyledTableCell align="center">
+                  <StyledTableCell align="right">
                     {row.start_time}
                   </StyledTableCell>
-                  <StyledTableCell align="center">
+                  <StyledTableCell align="right">
                     {row.end_time}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
+                  </StyledTableCell> */}
+                  <StyledTableCell align="right">
                     {row.username}
                   </StyledTableCell>
-                  <StyledTableCell align="center">
+                  <StyledTableCell align="right">
                     {row?.email_id}
                   </StyledTableCell>
-                  <StyledTableCell align="center">
+                  <StyledTableCell align="right">
                     {row.mobile_no}
                   </StyledTableCell>
-                  <StyledTableCell align="center">
+                  {/* <StyledTableCell align="right">
                     {row.appointment_description || "-"}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
+                  </StyledTableCell> */}
+                  <StyledTableCell align="right">
                     {row.reason || "-"}
                   </StyledTableCell>
-                  <StyledTableCell align="center">
+                  <StyledTableCell align="right">
                     Health Care/Insurance
                   </StyledTableCell>
-                  <StyledTableCell align="center" component="th" scope="row">
+                  <StyledTableCell component="th" scope="row">
                     <ButtonComponent name={"Call"} variant={"contained"} />
                   </StyledTableCell>
 
@@ -207,4 +207,4 @@ function BookedAppointments() {
   );
 }
 
-export default BookedAppointments;
+export default PendingAppointments;

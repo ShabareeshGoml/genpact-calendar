@@ -32,7 +32,7 @@ function Login() {
       formValues?.email === "admin" &&
       formValues.password === "admin"
     ) {
-      router.push(`/admin`, {
+      router.push(`/admin/markshift`, {
         scroll: false,
       });
     } else {

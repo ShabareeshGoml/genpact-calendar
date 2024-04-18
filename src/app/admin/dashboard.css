@@ -1,17 +1,28 @@
+.header-hero-container {
+  position: relative; /* Make it a positioning context for z-index */
+  z-index: 2; /* Ensure the header is above the sidebar */
+}
+.admin-hero-container {
+  display: flex;
+  gap: 25px;
+}
+
 .flex-class-nav {
   display: flex;
   align-items: center;
-  width: calc(100% - 90px);
+  width: 100%;
   padding: 5px 0px;
-  margin-right: 1450px;
+  margin-right: 50px;
   margin-left: 0px;
 }
 
-.reorder-icon svg {
+.reorder-icon {
+  display: block;
   width: 24px;
   height: 24px;
   fill: #fff;
   margin-left: 10px;
+  z-index: 2; /* Ensure the icon is above the sidebar */
 }
 
 .heading {
@@ -22,37 +33,53 @@
   padding-top: 4px;
 }
 
-.sidebar {
+/* Mobile View */
+.sidebar.mobile {
   position: fixed;
-  width: 350px;
+  width: 100%;
   height: 100%;
   background-color: #9acbff;
-  z-index: 2;
-  left: 0;
-  top: 51px;
+  z-index: 0;
+  left: -100%;
+  top: 0;
   bottom: 0;
   overflow-y: hidden;
+  transition: left 0.3s ease;
+}
+
+/* Laptop View */
+.sidebar.laptop {
+  position: fixed;
+  width: 300px;
+  margin-top: 51px;
+  height: 100%;
+  background-color: #9acbff;
+  z-index: -999;
+  left: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.sidebar-container {
+  width: 300px;
+  background-color: #9acbff;
+  height: 100dvh;
+}
+.sidebar.open {
+  left: 0; /* Show the sidebar when open */
 }
 
 .sidebar-content {
   display: flex;
   flex-direction: column;
-  justify-content: top;
+  justify-content: center;
   align-items: flex-start;
-  height: 100%;
   font-size: 18px;
   font-family: "Arial", sans-serif;
   color: #2f4c58;
-  padding-left: 20px;
-  padding-top: 120px;
-}
-
-.sidebar.open {
-  transform: translateX(0%);
-}
-
-.sidebar.open .sidebar-content {
-  display: block;
+  gap: 50px;
+  height: 100%;
+  padding-left: 8px;
 }
 
 .sidebar p {
@@ -61,10 +88,11 @@
   margin-bottom: 30px !important;
   cursor: pointer;
 }
+
 .sidebar p.active-item {
   background-color: #007fff;
   color: #fff;
-  padding: 10px 10px;
+  padding: 10px 15px; /* Adjust padding */
   border-radius: 10px;
 }
 
@@ -77,34 +105,26 @@
   color: #007fff;
 }
 
-/* Media queries for different screen sizes */
-@media (max-width: 768px) {
-  /* Mobile screens */
-  .flex-class-nav {
-    margin-right: 50px;
-  }
-
-  .reorder-icon {
-    display: block; /* Show the icon only for mobile screens */
-  }
-
-  .sidebar {
-    width: 100%;
-    top: 0;
-  }
-
-  .sidebar-content {
-    padding-top: 60px;
-  }
+.admin-main-content-layout-container {
+  width: calc(100dvw - 300px);
 }
 
+.non-active-item {
+  padding: 5px;
+}
+/* Media queries for different screen sizes */
 @media (min-width: 769px) {
-  /* Desktop screens */
   .flex-class-nav {
     margin-right: 1450px;
   }
 
   .reorder-icon {
     display: none; /* Hide the icon for desktop screens */
+  }
+}
+
+@media (max-width: 769px) {
+  .admin-main-content-layout-container {
+    margin-left: 0;
   }
 }

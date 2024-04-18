@@ -1,0 +1,78 @@
+.app-table-hero-container {
+    width: 95%;
+    margin: 20px auto;
+  }
+  
+  .app-action-container {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+  
+  .cr-ptr {
+    cursor: pointer;
+  }
+  
+  .modal-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+  }
+  
+  .modal-body {
+    margin-top: 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .modal-button-container {
+    margin-top: 24px;
+    display: flex;
+    gap: 14px;
+    justify-content: flex-end;
+  }
+  
+  .zero-data {
+    font-size: 18px;
+    padding: 20px;
+  }
+  .app-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  /* Dropdown for Months */
+.month-dropdown {
+  margin-right: 10px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 2px solid #000000;
+  font-size: 16px;
+}
+
+/* Update Button */
+.markshift-update-button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+
+}
+
+.markshift-update-button:hover {
+  background-color: #0056b3;
+}
+
+.markshift-update-button:disabled {
+  background-color: #b3cfff; /* Faded background color */
+  cursor: not-allowed; /* Change cursor to not-allowed */
+  opacity: 0.7; /* Reduce opacity for a faded appearance */
+}

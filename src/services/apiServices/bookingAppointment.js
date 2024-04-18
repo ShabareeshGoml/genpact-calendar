@@ -63,11 +63,15 @@ export const fetchCustomerDetails = async (cusID) => {
   }
 };
 
-export const getAgent = async (prodId, date) => {
+export const getAgent = async (prodId, date, time) => {
   try {
-    const response = await axiosBase.get(`/slots/${prodId}/${date}`, {
-      headers: { type: "agent" },
-    });
+    const response = await axiosBase.get(
+      `/slots/${prodId}/${date}?slot_time=${time}`
+      // ,
+      // {
+      //   headers: { type: "agent" },
+      // }
+    );
     return response?.data;
   } catch (error) {
     console.log(error);
