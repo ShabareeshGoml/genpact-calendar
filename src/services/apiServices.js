@@ -18,11 +18,21 @@ export const bookSlot = async (body) => {
   }
 };
 
-export const getAgentList = async () => {
-  try {
-    const response = await axiosBase.get(`/agents/`);
-    return response.data;
-  } catch (error) {
-    console.log(error);
+  export const getAgentList = async () => {
+    try {
+      const response = await axiosBase.get(`/agents/`);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  export const putAgentList = async(appointmentDetails)=>{
+    try{
+      const response = await axiosBase.put(`/agents/update`,appointmentDetails);
+
+      return response.data;
+    }catch(error){
+      console.log(error);
+    }
   }
-};

@@ -9,9 +9,11 @@ export const fetchBookedSlotsOfCustomer = async (cusId) => {
   }
 };
 
-export const cancelBookedSlotsOfCustomer = async (appID) => {
+export const cancelBookedSlotsOfCustomer = async (appID, reason) => {
   try {
-    const response = await axiosBase.post(`/cancel_appointment/${appID}`);
+    const response = await axiosBase.post(
+      `/cancel_appointment/${appID}?reason=${reason}`
+    );
     return response?.data;
   } catch (error) {
     console.log(error);

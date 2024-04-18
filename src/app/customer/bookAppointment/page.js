@@ -28,6 +28,7 @@ import { isObjectEmpty } from "@/utils/functions";
 import moment from "moment";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Suspense } from "react";
 
 function BookAppointment() {
   const router = useRouter();
@@ -35,6 +36,8 @@ function BookAppointment() {
   const customerId = searchParams.get("customer_id");
   const productId = searchParams.get("product_id");
   const appointmentID = searchParams.get("appointment_id");
+  const caseID = searchParams.get("case_id");
+
   //getAppointmentDetails
   useEffect(() => {
     fetchCustomerDetails(customerId).then((e) => {
@@ -67,6 +70,7 @@ function BookAppointment() {
     message: "",
     phone: "",
   });
+  const [reScheduleReason, setreScheduleReason] = useState("");
   const onChangeHandler = (e) => {
     setformValues({ ...formValues, [e.target.name]: e.target.value });
   };
@@ -91,6 +95,7 @@ function BookAppointment() {
         date: moment(new Date(value)).format("DD-MM-YY"),
         start_time: selectedTimeSlot?.start,
         end_time: selectedTimeSlot?.end,
+        reason: reScheduleReason,
       };
       updateAppointment(appointmentID, schedule).then((e) => {
         console.log(e, "app");
@@ -105,7 +110,7 @@ function BookAppointment() {
             theme: "light",
           });
           router.push(
-            `/customer/bookedAppointment?customer_id=${customerId}&product_id=${productId}`,
+            `/customer/bookedAppointment?customer_id=${customerId}&product_id=${productId}&case_id=${caseID}`,
             {
               scroll: false,
             }
@@ -113,19 +118,34 @@ function BookAppointment() {
         }
       });
     } else {
-      getAgent(productId, moment(new Date(value)).format("YYYY-MM-DD")).then(
-        (agentId) => {
-          console.log(agentId);
-          const schedule = {
-            customer_id: customerId,
-            date: moment(new Date(value)).format("YY-MM-DD"),
-            agent_id: agentId,
-            appointment_description: formValues?.message,
-            start_time: selectedTimeSlot?.start,
-            end_time: selectedTimeSlot?.end,
-          };
-          console.log(schedule, "schedule");
-          createAppointment(schedule).then((slotConfirm) => {
+      getAgent(
+        productId,
+        moment(new Date(value)).format("DD-MM-YY"),
+        selectedTimeSlot?.start
+      ).then((agentId) => {
+        console.log(agentId);
+        const schedule = {
+          customer_id: customerId,
+          date: moment(new Date(value)).format("YY-MM-DD"),
+          agent_id: agentId?.payload?.agent_id,
+          appointment_description: formValues?.message,
+          start_time: selectedTimeSlot?.start,
+          // +
+          // ":00 " +
+          // moment(new Date(value)).format("DD-MM-YYYY") +
+          // " " +
+          // getTimeZone(),
+          end_time: selectedTimeSlot?.end,
+          // +
+          // ":00 " +
+          // moment(new Date(value)).format("DD-MM-YYYY") +
+          // " " +
+          // getTimeZone(),
+          customer_timezone: getTimeZone(),
+        };
+        console.log(schedule, "schedule");
+        createAppointment(schedule)
+          .then((slotConfirm) => {
             if (slotConfirm?.payload?.appointment_id) {
               console.log(slotConfirm?.payload?.appointment_id, "slot");
               toast.success("Booking Confirmed", {
@@ -144,7 +164,7 @@ function BookAppointment() {
                 }
               );
             } else {
-              toast.error("Booking Failed", {
+              toast.error(slotConfirm?.message, {
                 position: "top-right",
                 autoClose: 3000,
                 hideProgressBar: false,
@@ -154,42 +174,86 @@ function BookAppointment() {
                 theme: "light",
               });
             }
+          })
+          .catch((err) => {
+            toast.error("Booking Failed", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              theme: "light",
+            });
           });
-          // .catch((err) => {
-          //   toast.error("Booking Failed", {
-          //     position: "top-right",
-          //     autoClose: 3000,
-          //     hideProgressBar: false,
-          //     closeOnClick: true,
-          //     pauseOnHover: true,
-          //     draggable: true,
-          //     theme: "light",
-          //   });
-          // });
-        }
-      );
+      });
     }
   };
+  function getTimeZone() {
+    var offset = new Date().getTimezoneOffset(),
+      o = Math.abs(offset);
+    return (
+      (offset < 0 ? "+" : "-") +
+      ("00" + Math.floor(o / 60)).slice(-2) +
+      ":" +
+      ("00" + (o % 60)).slice(-2)
+    );
+  }
+  //12:00:00 15/04/2024 -10:00
+  //HH:MM:SS DD/MM/YYYY +/- UTC
+  var offset = new Date().getTimezoneOffset();
+  console.log(
+    offset,
+    getTimeZone(),
+    selectedTimeSlot?.start +
+      ":00 " +
+      moment(new Date(value)).format("YY-MM-DD") +
+      " " +
+      getTimeZone(),
+    "offset"
+  );
 
   let isFormValueDisable = appointmentID ? false : isObjectEmpty(formValues);
   console.log(formValues, appDes, "test");
   return (
-    <div className="book-hero-container">
-      <ToastContainer />
-      {!showForm ? (
-        <>
-          <label className="book-label">Choose a Date</label>
-          <div className="book-calendar-container">
-            <Calendar
-              onChange={onChange}
-              value={value}
-              className={"calendar-react"}
-              // minDate={new Date()}
-            />
-            {/* <CalendarComponent onDaySelection={(date) => onDaySelection(date)} /> */}
-          </div>
-          <div className="time-zone-picker-cnt">
+    <Suspense fallback={<div>Loading...</div>}>
+      <div className="book-hero-container">
+        <ToastContainer />
+        {!showForm ? (
+          <>
+            <label className="book-label">Customer Info</label>
+            <div className="book-slot-picker-hero-container-form">
+              <div className="cus-info-cntr">
+                <div className="cus-info-line-cntr">
+                  <div className="cus-info-heading">Customer Name :</div>{" "}
+                  {formValues?.name}
+                </div>
+                <div className="cus-info-line-cntr">
+                  <div className="cus-info-heading">Customer Email :</div>{" "}
+                  {formValues?.email}
+                </div>
+                <div className="cus-info-line-cntr">
+                  <div className="cus-info-heading">Customer Phone :</div>{" "}
+                  {formValues?.phone}
+                </div>
+                <div className="cus-info-line-cntr">
+                  <div className="cus-info-heading">Case ID :</div>{" "}
+                  <span className="test">{caseID}</span>
+                </div>
+              </div>
+            </div>
+            <label className="book-label">Choose a Date</label>
+            <div className="book-calendar-container">
+              <Calendar
+                onChange={onChange}
+                value={value}
+                className={"calendar-react"}
+                minDate={new Date()}
+              />
+              {/* <CalendarComponent onDaySelection={(date) => onDaySelection(date)} /> */}
+            </div>
             <label className="book-label">Pick a time</label>
+            {/* <div className="time-zone-picker-cnt">
             <FormControl sx={{ m: 1, minWidth: 160 }}>
               <InputLabel id="demo-simple-select-helper-label">
                 Time Zone
@@ -210,158 +274,150 @@ function BookAppointment() {
                 <MenuItem value={20}>Twenty</MenuItem>
                 <MenuItem value={30}>Thirty</MenuItem>
               </Select>
-              {/* <FormHelperText>With label + helper text</FormHelperText> */}
             </FormControl>
-          </div>
+          </div> */}
 
-          <div className="book-slot-picker-hero-container">
-            {availableSlotTime?.map((slot) => (
-              <span
-                //book-slot-cnt-selected
-                className={`book-slot-cnt ${
-                  selectedTimeSlot?.id === slot?.id && `book-slot-cnt-selected`
-                }`}
-                key={slot?.id}
-                onClick={() => onTimeSlotSelection(slot)}
-              >
-                {slot?.start + " - " + slot?.end}
-              </span>
-            ))}
-          </div>
-          <div className="book-btn-container">
-            <ButtonComponent
-              name={"Continue"}
-              variant={"contained"}
-              disabled={value === "" || selectedTimeSlot === null}
-              onClick={onCompleteForm1}
-            />
-          </div>
-        </>
-      ) : (
-        <>
-          <label className="book-label">User Details</label>
-          <div className="book-slot-picker-hero-container">
-            <div className="input-pop-up">
-              <label>Name</label>
-              <TextField
-                required
-                size="small"
-                id="outlined-required"
-                label="Name"
-                name="name"
-                onChange={(e) => onChangeHandler(e)}
-                value={formValues?.name}
-                className="inputField-ctmz"
-                disabled
-              />
-              {/* <input
-            type={"text"}
-            className="input-container"
-            name="name"
-            onChange={(e) => onChangeHandler(e)}
-            value={formValues?.name}
-          /> */}
+            <div className="book-slot-picker-hero-container">
+              {availableSlotTime?.map((slot) => (
+                <span
+                  //book-slot-cnt-selected
+                  className={`book-slot-cnt ${
+                    selectedTimeSlot?.id === slot?.id &&
+                    `book-slot-cnt-selected`
+                  }`}
+                  key={slot?.id}
+                  onClick={() => onTimeSlotSelection(slot)}
+                >
+                  {slot?.start + " - " + slot?.end}
+                </span>
+              ))}
             </div>
-            <div className="input-pop-up">
-              <label>Email</label>
-              <TextField
-                required
-                size="small"
-                id="outlined-required"
-                label="Email"
-                type="email"
-                name="email"
-                onChange={(e) => onChangeHandler(e)}
-                value={formValues?.email}
-                className="inputField-ctmz"
-                disabled
+            <div className="book-btn-container">
+              <ButtonComponent
+                name={"Continue"}
+                variant={"contained"}
+                disabled={value === "" || selectedTimeSlot === null}
+                onClick={onCompleteForm1}
               />
-              {/* <input
-            type={"email"}
-            className="input-container"
-            name="email"
-            onChange={(e) => onChangeHandler(e)}
-            value={formValues?.email}
-          /> */}
             </div>
-            <div className="input-pop-up">
-              <label>Phone No</label>
-              <TextField
-                required
-                size="small"
-                id="outlined-required"
-                label="Phone"
-                type="tel"
-                name="phone"
-                onChange={(e) => onChangeHandler(e)}
-                value={formValues?.phone}
-                className="inputField-ctmz"
-                disabled
-              />
-              {/* <input
-            type={"tel"}
-            className="input-container"
-            name="phone"
-            onChange={(e) => onChangeHandler(e)}
-            value={formValues?.phone}
-          /> */}
-            </div>
-            {/* <div className="input-pop-up">
-          <label>Select Time</label>
-          <input
-            type="time"
-            className="input-container"
-            name="time"
-            onChange={(e) => onChangeHandler(e)}
-            value={formValues?.time}
-          />
-        </div> */}
-            <div className="input-pop-up">
-              <label>Message</label>
-              <TextField
-                multiline
-                rows={2}
-                maxRows={4}
-                name="message"
-                onChange={(e) => onChangeHandler(e)}
-                value={appDes || formValues?.message}
-                className="inputField-ctmz"
-                disabled={appointmentID ? true : false}
-              />
-              {/* <textarea
-            name="message"
-            className="input-txtArea"
-            onChange={(e) => onChangeHandler(e)}
-            value={formValues?.message}
-          /> */}
-            </div>
+          </>
+        ) : (
+          <>
+            <label className="book-label">User Details</label>
+            <div className="book-slot-picker-hero-container-form">
+              <div className="input-pop-up">
+                <label>Name</label>
+                <TextField
+                  required
+                  size="small"
+                  id="outlined-required"
+                  label="Name"
+                  name="name"
+                  onChange={(e) => onChangeHandler(e)}
+                  value={formValues?.name}
+                  className="inputField-ctmz"
+                  disabled
+                />
+              </div>
+              <div className="input-pop-up">
+                <label>Email</label>
+                <TextField
+                  required
+                  size="small"
+                  id="outlined-required"
+                  label="Email"
+                  type="email"
+                  name="email"
+                  onChange={(e) => onChangeHandler(e)}
+                  value={formValues?.email}
+                  className="inputField-ctmz"
+                  disabled
+                />
+              </div>
+              <div className="input-pop-up">
+                <label>Phone No</label>
+                <TextField
+                  required
+                  size="small"
+                  id="outlined-required"
+                  label="Phone"
+                  type="tel"
+                  name="phone"
+                  onChange={(e) => onChangeHandler(e)}
+                  value={formValues?.phone}
+                  className="inputField-ctmz"
+                  disabled
+                />
+              </div>
+              <div className="input-pop-up">
+                <label>Case ID</label>
+                <TextField
+                  required
+                  size="small"
+                  id="outlined-required"
+                  label="Case ID"
+                  name="case_id"
+                  // onChange={(e) => onChangeHandler(e)}
+                  value={caseID}
+                  className="inputField-ctmz"
+                  disabled
+                />
+              </div>
 
-            {/* <button
+              <div className="input-pop-up">
+                <label>Message</label>
+                <TextField
+                  multiline
+                  rows={2}
+                  maxRows={4}
+                  name="message"
+                  onChange={(e) => onChangeHandler(e)}
+                  value={appDes || formValues?.message}
+                  className="inputField-ctmz"
+                  disabled={appointmentID ? true : false}
+                />
+              </div>
+              {appointmentID && (
+                <div className="input-pop-up">
+                  <label>Reschedule Reason</label>
+                  <TextField
+                    multiline
+                    rows={2}
+                    maxRows={4}
+                    name="message"
+                    onChange={(e) => setreScheduleReason(e?.target?.value)}
+                    value={reScheduleReason}
+                    className="inputField-ctmz"
+                  />
+                </div>
+              )}
+
+              {/* <button
           className="cutm-button"
           // onClick={onSlotBook}
           // disabled={isBookDisable}
         >
           Book Slot
         </button> */}
-          </div>
-          <div className="book-btn-dual-cntr">
-            <ButtonComponent
-              name={"back"}
-              variant={"outlined"}
-              onClick={onClickBack}
-            />
+            </div>
+            <div className="book-btn-dual-cntr">
+              <ButtonComponent
+                name={"back"}
+                variant={"outlined"}
+                onClick={onClickBack}
+              />
 
-            <ButtonComponent
-              name={"Continue"}
-              variant={"contained"}
-              disabled={isFormValueDisable}
-              onClick={onCreateAppointment}
-            />
-          </div>
-        </>
-      )}
+              <ButtonComponent
+                name={"Continue"}
+                variant={"contained"}
+                disabled={isFormValueDisable}
+                onClick={onCreateAppointment}
+              />
+            </div>
+          </>
+        )}
 
-      {/* <div style={{ width: "22%", maxHeight: "82dvh !important" }}>
+        {/* <div style={{ width: "22%", maxHeight: "82dvh !important" }}>
         <EventSideBar
           selectedDate={selectedDate}
           isClient={true}
@@ -369,7 +425,8 @@ function BookAppointment() {
           userInfo={userDetails}
         />
       </div> */}
-    </div>
+      </div>
+    </Suspense>
   );
 }
 

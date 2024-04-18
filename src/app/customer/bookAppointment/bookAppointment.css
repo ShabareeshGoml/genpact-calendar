@@ -66,6 +66,53 @@
   flex-wrap: wrap;
 }
 
+.book-slot-picker-hero-container-form {
+  box-shadow: 0px 1px 3px 0px #130a2e21;
+
+  box-shadow: 0px 3px 14px 0px #130a2e08;
+
+  box-shadow: 0px 8px 32px 0px #130a2e12;
+
+  box-shadow: 0px 30px 34px 0px #130a2e14;
+  border: none;
+  border-radius: 8px;
+  max-width: 60dvw;
+  background-color: white;
+  margin: 28px 0;
+  padding: 28px;
+  display: flex;
+  text-wrap: wrap;
+  flex-wrap: wrap;
+  /* overflow-x: scroll; */
+}
+.cus-info-cntr {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 58dvw;
+
+  text-wrap: wrap;
+  flex-wrap: wrap;
+}
+.cus-info-line-cntr {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  max-width: 58dvw;
+  word-wrap: break-word;
+  text-wrap: wrap;
+  flex-wrap: wrap;
+}
+.test {
+  width: 95%;
+  text-wrap: wrap;
+  /* display: none; */
+}
+.cus-info-heading {
+  font-size: 18px;
+  font-weight: 500;
+}
 .book-slot-cnt {
   /* background-color: #007fff; */
   background-color: #f3f2f5;
@@ -110,7 +157,13 @@
 @media screen and (max-width: 580px) {
   .book-slot-picker-hero-container {
     width: 90dvw;
-    margin: auto;
+    margin: 18px auto;
+    height: 282px;
+    overflow: scroll;
+  }
+  .book-slot-picker-hero-container-form {
+    width: 90dvw;
+    margin: 18px auto;
   }
   .time-zone-picker-cnt {
     flex-direction: column;
@@ -128,5 +181,12 @@
     margin: 10px;
     gap: 22px;
     flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 780px) {
+  .book-slot-picker-hero-container {
+    height: 282px;
+    overflow: scroll;
   }
 }

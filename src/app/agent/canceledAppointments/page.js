@@ -6,14 +6,12 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import "./bookedAppointment.css";
+import "../appointments/bookedAppointment.css";
 import {
   cancelBookedSlotsOfCustomer,
   fetchBookedSlotsOfCustomer,
 } from "@/services/apiServices/bookedAppointment";
 import { useSearchParams } from "next/navigation";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Modal } from "react-responsive-modal";
@@ -23,6 +21,7 @@ import { useRouter } from "next/navigation";
 import { fetchBookedSlotsOfAgent } from "@/services/apiServices/agentUpcomming";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import { styled } from "@mui/material/styles";
+import { fetchCancelledAppointmentsOfAgent } from "@/services/apiServices/cancelledAppointments";
 
 function BookedAppointments() {
   const router = useRouter();
@@ -30,7 +29,7 @@ function BookedAppointments() {
   const agentId = searchParams.get("agent_id");
   // const productId = searchParams.get("product_id");
   useEffect(() => {
-    fetchBookedSlotsOfAgent(agentId).then((e) => {
+    fetchCancelledAppointmentsOfAgent(agentId).then((e) => {
       setAppointmentDetails(e);
     });
   }, []);
@@ -99,14 +98,6 @@ function BookedAppointments() {
             <TableRow>
               <StyledTableCell align="center">Case ID</StyledTableCell>
               <StyledTableCell align="center">Appointment Date</StyledTableCell>
-
-              <StyledTableCell align="center">
-                Mail Initiated Date
-              </StyledTableCell>
-              <StyledTableCell align="center">
-                Appointment Booked Date
-              </StyledTableCell>
-
               <StyledTableCell align="center">Start Time</StyledTableCell>
               <StyledTableCell align="center">End Time</StyledTableCell>
               <StyledTableCell align="center">Customer Name</StyledTableCell>
@@ -115,9 +106,7 @@ function BookedAppointments() {
               <StyledTableCell align="center">
                 Appointment Description
               </StyledTableCell>
-              <StyledTableCell align="center">Comments</StyledTableCell>
-              <StyledTableCell align="center">Product</StyledTableCell>
-              <StyledTableCell>Action</StyledTableCell>
+              <StyledTableCell align="center">Cancel Reason</StyledTableCell>
               {/* <StyledTableCell align="center">Actions</StyledTableCell> */}
             </TableRow>
           </TableHead>
@@ -129,16 +118,10 @@ function BookedAppointments() {
                   key={row.id}
                   sx={{ "&:last-child td, &:last-child th": { border: "2px" } }}
                 >
-                  <StyledTableCell align="center" component="th" scope="row">
+                  <StyledTableCell component="th" scope="row" align="center">
                     {row.case_id || "-"}
                   </StyledTableCell>
                   <StyledTableCell align="center">{row.date}</StyledTableCell>
-                  <StyledTableCell align="center">
-                    {row.created_at?.substring(0, 10) || row?.date}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {row.scheduled_at?.substring(0, 10) || row?.date}
-                  </StyledTableCell>
                   <StyledTableCell align="center">
                     {row.start_time}
                   </StyledTableCell>
@@ -155,19 +138,13 @@ function BookedAppointments() {
                     {row.mobile_no}
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    {row.appointment_description || "-"}
+                    {row.appointment_description}
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    {row.reason || "-"}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    Health Care/Insurance
-                  </StyledTableCell>
-                  <StyledTableCell align="center" component="th" scope="row">
-                    <ButtonComponent name={"Call"} variant={"contained"} />
+                    {row?.reason}
                   </StyledTableCell>
 
-                  {/* <StyledTableCell align="right">
+                  {/* <StyledTableCell align="center">
                     <div className="app-action-container">
                       <EditIcon
                         className="cr-ptr"

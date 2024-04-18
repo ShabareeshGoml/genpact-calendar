@@ -1,190 +1,277 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import "./MarkShiftDetails.css";
-import { addSchedule, fetchAllAgents } from "@/services/apiServices/markShift";
-import { fetchAllProductList } from "@/services/apiServices/productPage";
-import moment from "moment";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import "./markshift.css";
+import {
+  cancelBookedSlotsOfCustomer,
+  fetchBookedSlotsOfCustomer,
+} from "@/services/apiServices/bookedAppointment";
+import { useSearchParams } from "next/navigation";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Modal } from "react-responsive-modal";
+import "react-responsive-modal/styles.css";
+import ButtonComponent from "@/components/Button/ButtonComponent";
+import { useRouter } from "next/navigation";
+import { fetchBookedSlotsOfAgent } from "@/services/apiServices/agentUpcomming";
+import TableCell, { tableCellClasses } from "@mui/material/TableCell";
+import { styled } from "@mui/material/styles";
+import { getAgentList } from "@/services/apiServices";
+import { putAgentList } from "@/services/apiServices";
+import Checkbox from "@mui/material/Checkbox";
 
-function MarkShiftDetails() {
+function MarkShift() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const agentId = searchParams.get("agent_id");
+  // const productId = searchParams.get("product_id");
   useEffect(() => {
-    fetchAllAgents().then((agent) => setagentListOption(agent));
-    fetchAllProductList().then((product) => setproductList(product));
+    getAgentList().then((e) => {
+      setAppointmentDetails(e?.agents_details);
+    });
   }, []);
 
-  const [agentListOption, setagentListOption] = useState([]);
-  const [productList, setproductList] = useState([]);
-  const [formValue, setformValue] = useState({
-    agent_id: "",
-    call_name: "",
-    date: "",
-    shift_from: "",
-    shift_to: "",
-    alloted_product_id: "",
-    slot_duration_mins: "",
-  });
+  // useEffect(() => {
+  //   // Update backend API here when appointmentDetails change
+  // }, [appointmentDetails]);
+  const [appointmentDetails, setAppointmentDetails] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [isUpdated, setIsUpdated] = useState(false);
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: theme.palette.common.black,
+      color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 14,
+    },
+  }));
 
-  const handelOnChange = (e) => {
-    setformValue({ ...formValue, [e.target.name]: e.target.value });
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    "&:last-child td, &:last-child th": {
+      border: 0,
+    },
+  }));
+  function openModal() {
+    setRescheduleModalOpen(true);
+  }
+  function closeModal() {
+    setRescheduleModalOpen(false);
+  }
+
+  const days = [
+    { id: 1, name: "M", value: "Monday" },
+    { id: 2, name: "T", value: "Tuesday" },
+    { id: 3, name: "W", value: "Wednesday" },
+    { id: 4, name: "Th", value: "Thursday" },
+    { id: 5, name: "F", value: "Friday" },
+    { id: 6, name: "Sa", value: "Saturday" },
+    { id: 7, name: "Su", value: "Sunday" },
+  ];
+
+  const getShiftValue = (shift_from, shift_to) => {
+    console.log(shift_from, shift_to, "chk1");
+    if (shift_from === "09:00:00" && shift_to === "17:00:00") {
+      return "09:00:00-17:00:00";
+    } else if (shift_from === "17:00:00" && shift_to === "01:00:00") {
+      return "17:00:00-01:00:00";
+    } else if (shift_from === "01:00:00" && shift_to === "09:00:00") {
+      return "01:00:00-09:00:00";
+    } else {
+      return "-";
+    }
   };
 
-  const isObjectEmpty = (obj) => {
-    let empty = Object.keys(obj).filter(
-      (key) => obj[key] === null || obj[key] === undefined || obj[key] === ""
-    );
+  const handleShiftChange = (e, id) => {
+    const selectedShift = e.target.value;
+    const shift_from = selectedShift.split("-")[0];
+    const shift_to = selectedShift.split("-")[1];
 
-    return empty.length !== 0;
-  };
-
-  const onMarkShiftClick = (e) => {
-    e.preventDefault();
-    const shift = {
-      agent_id: parseInt(formValue?.agent_id),
-      call_name: formValue?.call_name,
-      date: moment(formValue?.date).format("YYYY-MM-DD"),
-      shift_from: formValue?.shift_from,
-      shift_to: formValue?.shift_to,
-      alloted_product_id: parseInt(formValue?.alloted_product_id),
-      slot_duration_mins: parseInt(formValue?.slot_duration_mins),
-    };
-    addSchedule(shift).then((e) => {
-      console.log(e);
-      setformValue({
-        agent_id: "",
-        call_name: "",
-        date: "",
-        shift_from: "",
-        shift_to: "",
-        alloted_product_id: "",
-        slot_duration_mins: "",
-      });
-      toast.success("Schedule Added Succesfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "light",
-      });
+    const newAppointmentDetails = appointmentDetails.map((row) => {
+      if (row.id === id) {
+        return {
+          ...row,
+          shift_from: shift_from !== "-" ? shift_from : null,
+          shift_to: shift_to !== "-" ? shift_to : null,
+        };
+      }
+      return row;
     });
+    setAppointmentDetails([...newAppointmentDetails]);
   };
 
-  let isShiftDisable = isObjectEmpty(formValue);
-  console.log(formValue, isObjectEmpty(formValue), "list");
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
+  const handleWeeklyOffChange = (day, id) => {
+    const newAppointmentDetails = appointmentDetails.map((row) => {
+      if (row.id === id) {
+        const updatedWeeklyOff = row.weekly_off ? [...row.weekly_off] : [];
+        const index = updatedWeeklyOff.indexOf(day.value);
+        if (index === -1) {
+          updatedWeeklyOff.push(day.value);
+        } else {
+          updatedWeeklyOff.splice(index, 1);
+        }
+        return {
+          ...row,
+          weekly_off: updatedWeeklyOff.length ? updatedWeeklyOff : null,
+        };
+      }
+      return row;
+    });
+    setAppointmentDetails(newAppointmentDetails);
+  };
+
+  const updateBackend = async () => {
+    try {
+      console.log(appointmentDetails, "check before sending backend");
+      // setIsUpdated(true);
+      const body = {
+        agents_details: appointmentDetails,
+      };
+      const response = await putAgentList(body);
+      if (response.message === "All the row updated successfully") {
+        toast.success("Updated successfully", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "light",
+        });
+      } else {
+        toast.error("Failed to update data", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "light",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("An error occurred");
+    }
+  };
+
+  console.log(appointmentDetails, "appointmentDetails");
   return (
-    <div className="shift-hero-container">
-      <h2>Mark Shift For Sub-Agents</h2>
-      <div className="shift-input-fields-hero-container">
-        <div className="shift-duo-container">
-          <div className="shift-input-container">
-            <label className="shift-input-label">Select Agent</label>
-            <select
-              className="shift-input"
-              name="agent_id"
-              onChange={handelOnChange}
-              value={formValue?.agent_id}
-            >
-              <option disabled value=""></option>
-              {agentListOption?.map((agent) => (
-                <option key={agent?.id} value={agent?.id}>
-                  {agent?.first_name + " " + agent?.last_name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="shift-input-container">
-            <label className="shift-input-label">Agent Call Name</label>
-            <input
-              className="shift-input"
-              type="text"
-              name="call_name"
-              onChange={handelOnChange}
-              value={formValue?.call_name}
-            />
-          </div>
-        </div>
-        <div className="shift-duo-container">
-          <div className="shift-input-container">
-            <label className="shift-input-label">Select Product</label>
-            <select
-              className="shift-input"
-              name="alloted_product_id"
-              onChange={handelOnChange}
-              value={formValue?.alloted_product_id}
-            >
-              <option value="" disabled></option>
-              {productList?.map((product) => (
-                <option key={product?.id} value={product?.id}>
-                  {product?.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="shift-input-container">
-            <label className="shift-input-label">Date</label>
-            <input
-              className="shift-input"
-              type="date"
-              name="date"
-              onChange={handelOnChange}
-              value={formValue?.date}
-            />
-          </div>
-        </div>
-        <div className="shift-duo-container">
-          <div className="shift-input-container">
-            <label className="shift-input-label">Start Time</label>
-            <input
-              className="shift-input"
-              name="shift_from"
-              type="text"
-              onChange={handelOnChange}
-              value={formValue?.shift_from}
-            />
-          </div>
-          <div className="shift-input-container">
-            <label className="shift-input-label">End Time</label>
-            <input
-              className="shift-input"
-              name="shift_to"
-              type="text"
-              onChange={handelOnChange}
-              value={formValue?.shift_to}
-            />
-          </div>
-        </div>
-
-        <div className="shift-duo-container">
-          <div className="shift-input-container">
-            <label className="shift-input-label">
-              Slot Duration In Minutes
-            </label>
-            <input
-              className="shift-input"
-              type="text"
-              name="slot_duration_mins"
-              onChange={handelOnChange}
-              value={formValue?.slot_duration_mins}
-            />
-          </div>
-        </div>
-
-        <div className="shift-submit-button-container">
-          <button
-            className="shift-submit-button"
-            disabled={isShiftDisable}
-            onClick={onMarkShiftClick}
-          >
-            Mark Shift
-          </button>
-        </div>
-      </div>
+    <div className="app-table-hero-container">
       <ToastContainer />
+      <div className="app-container">
+        {/* Dropdown for Months at left top */}
+        <select
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(e.target.value)}
+          className="month-dropdown"
+        >
+          <option value="">Select Month</option>
+          {months.map((month, index) => (
+            <option key={index} value={month}>
+              {month}
+            </option>
+          ))}
+        </select>
+
+        {/* Update button at right top */}
+        <button
+          onClick={updateBackend}
+          className="markshift-update-button"
+          disabled={!isUpdated}
+        >
+          Update
+        </button>
+      </div>
+
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              {/* <StyledTableCell></StyledTableCell> */}
+              <StyledTableCell align="center">Agent Name</StyledTableCell>
+              <StyledTableCell align="center">Weekly Off Days</StyledTableCell>
+
+              <StyledTableCell align="center">Shift Time</StyledTableCell>
+
+              {/* <StyledTableCell align="right">Actions</StyledTableCell> */}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {appointmentDetails &&
+              appointmentDetails?.map((row) => (
+                <StyledTableRow
+                  key={row.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: "2px" } }}
+                >
+                  {/* <StyledTableCell component="th" scope="row">
+                  <Checkbox  defaultChecked />
+                  </StyledTableCell> */}
+                  <StyledTableCell align="center">
+                    {row?.full_name}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {days?.map((day) => (
+                      <React.Fragment key={day.id}>
+                        <Checkbox
+                          id={day.id}
+                          checked={row?.weekly_off?.includes(day.value)}
+                          onChange={() => {
+                            handleWeeklyOffChange(day, row.id);
+                            setIsUpdated(true); // Set update status
+                          }}
+                        />
+                        {day.name}
+                      </React.Fragment>
+                    ))}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    <select
+                      value={getShiftValue(row.shift_from, row.shift_to)}
+                      onChange={(e) => {
+                        handleShiftChange(e, row.id);
+                        setIsUpdated(true); // Set update status
+                      }}
+                    >
+                      <option value="-">-</option>
+                      <option value="09:00:00-17:00:00">09:00 - 17:00</option>
+                      <option value="17:00:00-01:00:00">17:00 - 01:00</option>
+                      <option value="01:00:00-09:00:00">01:00 - 09:00</option>
+                    </select>
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 }
 
-export default MarkShiftDetails;
+export default MarkShift;

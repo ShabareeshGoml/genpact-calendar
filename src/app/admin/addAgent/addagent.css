@@ -1,0 +1,52 @@
+.book-label {
+  /* padding: 40px 20px; */
+  font-size: 28px;
+  font-weight: 600;
+}
+.form-main {
+  margin: 22px 0;
+}
+
+.book-slot-picker-hero-container-form {
+  box-shadow: 0px 1px 3px 0px #130a2e21;
+
+  box-shadow: 0px 3px 14px 0px #130a2e08;
+
+  box-shadow: 0px 8px 32px 0px #130a2e12;
+
+  box-shadow: 0px 30px 34px 0px #130a2e14;
+  border: none;
+  border-radius: 8px;
+  width: 60dvw;
+  background-color: white;
+  margin: 28px 0;
+  padding: 28px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.input-pop-up {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: larger;
+  margin: 10px 25px;
+}
+
+.inputField-ctmz {
+  width: 50dvw;
+  /* height: 40px; */
+}
+.book-btn-container {
+  display: flex;
+  justify-content: flex-end;
+  width: 60dvw;
+}
+
+@media screen and (max-width: 768px) {
+  .form-main {
+    width: 60dvw;
+    margin: 22px auto;
+  }
+}
